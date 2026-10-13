@@ -17,12 +17,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name="users")
-public class User {
+public class Users       {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_status")
     private UserStatus status;
 
@@ -30,11 +31,18 @@ public class User {
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name= "updeted_at")
-    private Instant updetedAt;
+    @Column(name= "updated_at")
+    private Instant updatedAt;
 
     @Enumerated(EnumType.STRING)
     private UserRole roles;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 
 }
 

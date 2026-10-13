@@ -1,7 +1,7 @@
 package com.p4buld_auth.model.provider;
 
 
-import com.p4buld_auth.model.user.User;
+import com.p4buld_auth.model.user.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name="auth_identity")
-public class Authidentity {
+public class AuthIdentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,14 +27,14 @@ public class Authidentity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Users user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false, length = 20)
-    private typeProvider provider;
+    private TypeProvider provider;
 
     @Column(name = "provider_id")
-    private String providerID;
+    private String providerId;
 
     @Column(unique = true)
     @Email
@@ -47,6 +47,13 @@ public class Authidentity {
     @Column(name= "created_at",updatable = false)
     @CreatedDate
     private Instant createdAt;
-    @Column(name= "updeted_at")
-    private Instant updetedAt;
+    @Column(name= "updated_at")
+    private Instant updatedAt;
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
+
 }

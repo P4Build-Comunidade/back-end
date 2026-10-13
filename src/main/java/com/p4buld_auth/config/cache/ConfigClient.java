@@ -1,4 +1,4 @@
-package com.p4buld_auth.config;
+package com.p4buld_auth.config.cache;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
