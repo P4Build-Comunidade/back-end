@@ -1,9 +1,11 @@
-package com.p4buld_auth.service;
+package com.p4buld_auth.service.impl;
 
 
 import com.p4buld_auth.client.DiscordClient;
-import com.p4buld_auth.dto.DiscordUserResponse;
+import com.p4buld_auth.dto.ExternalUser;
 import com.p4buld_auth.dto.TokenResponseDTO;
+import com.p4buld_auth.model.provider.TypeProvider;
+import com.p4buld_auth.service.interfaces.AuthenticationProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -12,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.UUID;
 
 @Service
-public class DiscordAuthService {
+public class DiscordAuthService implements AuthenticationProvider {
     @Value("${CLIENT_ID}")
     private String clientId;
 
@@ -33,6 +35,14 @@ public class DiscordAuthService {
         this.discordClient = discordClient;
     }
 
+
+    @Override
+    public ExternalUser authenticate(String code) {
+        TokenResponseDTO tokenResponseDTO = discordClient.exchangeCodeForToken(clientId,clientSecret,code,redirectUrl);
+        return discordClient.getUserInfo(tokenResponseDTO.accessToken());
+
+    }
+
     public String generateUlrAuth()  {
 
         String state = UUID.randomUUID().toString();
@@ -50,24 +60,11 @@ public class DiscordAuthService {
                 .toUriString();
 
     }
-    public TokenResponseDTO requestClient(String code, String state){
-       if (validateState(state) == false){
-           throw new RuntimeException();
-       }
-      return discordClient.exchangeCodeForToken(clientId,clientSecret,code,redirectUrl);
 
+    @Override
+    public TypeProvider getProvider() {
+       return TypeProvider.DISCORD;
     }
 
-    public DiscordUserResponse requestDataUSer(String code, String state){
-      TokenResponseDTO tokenResponseDTO = requestClient(code,state);
-        return discordClient.getUserInfo(tokenResponseDTO.accessToken());
-    }
 
-    public Boolean validateState(String state){
-       if (cache.get(state) != null){
-           cache.evict(state);
-           return true;
-       }
-       return false;
-    }
 }

@@ -1,6 +1,8 @@
 package com.p4buld_auth.model.user;
 
 
+import com.p4buld_auth.model.user.enums.UserRole;
+import com.p4buld_auth.model.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name="user")
+@Table(name="users")
 public class User {
 
     @Id
@@ -27,7 +29,12 @@ public class User {
     @Column(name= "created_at",updatable = false)
     @CreatedDate
     private Instant createdAt;
+
     @Column(name= "updeted_at")
     private Instant updetedAt;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole roles;
+
 }
 
